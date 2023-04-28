@@ -1,44 +1,31 @@
 import { Router } from 'express';
-import { body, check, validationResult } from 'express-validator';
-import { UserModel } from '../models/User.js';
+import { signUpSchema } from '../schema/validation.schema.js'
+import { validateHandler } from '../middleware/validate.handler.js'
+import { LoginController } from "../controller/login.controller.js";
 
 export const signUp = Router();
+const loginController = new LoginController()
 
 signUp.post(
   '/',
   // Validación y sanitización de los datos de entrada
-  body('username').not().isEmpty().trim(),
-  check('username').custom(async (username) => {
-    const maybeUser = await UserModel.findOne({ username });
-    if (maybeUser) {
-      throw new Error('username already in use');
-    }
-
-    return true;
-  }),
-  body('password').isLength({ min: 6 }),
-
+  validateHandler(signUpSchema, 'body'),
   //
-  async (request, response) => {
+  async (request, response, next) => {
     try {
-      const errors = validationResult(request);
-      if (!errors.isEmpty()) {
-        return response.status(400).json({ errors: errors.array() });
-      }
-
       const { username, password } = request.body;
 
-      const user = await UserModel.create({ username, password });
+      //Solucion problema de la contraseña
+      const user = await loginController.singUp(username, password);
 
       return response
         .status(201)
-        .json({ username: user.username, createdAt: user.createdAt });
+        .json({
+          username: user.username,
+        });
     } catch (error) {
+      next(error);
       console.error(`[signIn]: ${error}`);
-
-      return response.status(500).json({
-        error: 'An unexpected error happened. Please try again later',
-      });
     }
   }
 );
