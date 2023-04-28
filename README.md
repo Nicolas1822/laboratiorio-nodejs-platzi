@@ -52,3 +52,5 @@ Ayuda a otros estudiantes con eso que acabas de descubrir que haría este curso 
 - Por su parte, los [Pull Request](https://github.com/jonalvarezz/platzi-lab-nodejs-auth/pulls) siempre estarán abiertos para recibir mejoras puntuales.
 
 Happy hacking!
+
+comando para iniciar la api: npm start --workspace=api
