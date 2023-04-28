@@ -1,8 +1,10 @@
 import Mongoose from 'mongoose';
+import { config } from './config/config.js';
 
-const url = process.env.DATABASE_URL;
+const url = config.db_url.url;
 
 if (!url) {
+  console.log(`url ${url}`);
   throw new Error('DATABASE_URL is not set');
 }
 
